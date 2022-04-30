@@ -32,3 +32,17 @@ nodejs의 성격을 잘 살릴 수 있는 프로그램: 네트워크 애플리�
 - 프로세스 종료: `pm2 list` → `pm2 stop processname`
 - 소스 코드 변경 자동 감지: `pm2 start app.js --watch`  -> 리로드 없이 수정된 사항 자동 반영
 - 로그: `pm2 log`
+
+<br>
+
+> ### Modules
+
+  `Node.js`에서는 외부 모듈을 `required()` function을 이용해 사용 가능합니다. 수업에서는 `HTTP`, `File System`, `URL`, `QueryString` 모듈을 사용합니다.
+
+var http = require('http');
+
+var fs = require('fs');
+
+var url = require('url');
+
+var qs = require('querystring');
