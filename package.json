@@ -1,0 +1,25 @@
+{
+  "name": "nodejs",
+  "version": "1.0.0",
+  "description": "_생활코딩 node.js 강의 학습 내용입니다. 해당 강의에서는 Node.js의 동작 원리 등 개념적인 내용보다는 초심자 입장에서 Node.js를 활용해보는 것을 목표로 합니다. 그래서 JavaScript의 문법 내용도 가볍게 짚고 넘어가며, 최종적으로는 CRUD 기능이 담긴 간단한 웹 애플리케이션 구축을 목표로 합니다._",
+  "main": "main.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nogy21/opentutorials-nodejs.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nogy21/opentutorials-nodejs/issues"
+  },
+  "homepage": "https://github.com/nogy21/opentutorials-nodejs#readme",
+  "dependencies": {
+    "sanitize-html": "^2.7.0"
+  }
+}

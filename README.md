@@ -37,12 +37,8 @@ nodejs의 성격을 잘 살릴 수 있는 프로그램: 네트워크 애플리�
 
 > ### Modules
 
-  `Node.js`에서는 외부 모듈을 `required()` function을 이용해 사용 가능합니다. 수업에서는 `HTTP`, `File System`, `URL`, `QueryString` 모듈을 사용합니다.
+  `Node.js`에서는 외부 모듈을 `require()` function으로 불러와 사용. 수업에서는 `HTTP`, `File System`, `URL`, `QueryString`, `path`, `sanitize-html` 모듈 사용.
 
-var http = require('http');
+ 예를 들어, `var http = require('http');`와 같이 외부 http 모듈을 불러오면 `http` 객체의 `createServer()` 함수를 사용할 수 있다. 해당 함수로 서버를 생성해 요청과 응답 처리를 하며, `server.listen()` 함수로 특정 포트나 경로의 `listener`를 생성하게 된다.
 
-var fs = require('fs');
-
-var url = require('url');
-
-var qs = require('querystring');
+<br>
