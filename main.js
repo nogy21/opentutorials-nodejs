@@ -1,9 +1,22 @@
 const express = require('express');
 const app = express();
+const fs = require('fs');
+const template = require('./lib/template.js');
 
 // route, routing
-app.get('/', (req, res) => {
-  return res.send('/');
+app.get('/', (request, response) => {
+  fs.readdir('./data', function (error, filelist) {
+    const title = 'Welcome';
+    const description = 'Hello, Node.js';
+    const list = template.list(filelist);
+    const html = template.HTML(
+      title,
+      list,
+      `<h2>${title}</h2>${description}`,
+      `<a href="/create">create</a>`
+    );
+    response.send(html);
+  });
 });
 
 app.get('/page', (req, res) => {
@@ -26,18 +39,7 @@ app.listen(3000, () => console.log('## 3000 Listening ##'));
 //   var pathname = url.parse(_url, true).pathname;
 //   if (pathname === '/') {
 //     if (queryData.id === undefined) {
-//       fs.readdir('./data', function (error, filelist) {
-//         var title = 'Welcome';
-//         var description = 'Hello, Node.js';
-//         // var list = templateList(filelist);
-//         // var template = templateHTML(
-//         //   title,
-//         //   list,
-//         //   `<h2>${title}</h2>${description}`,
-//         //   `<a href="/create">create</a>`
-//         // );
-//         // response.writeHead(200);
-//         // response.end(template);
+//
 
 //         //refactoring
 //         var list = template.list(filelist);
