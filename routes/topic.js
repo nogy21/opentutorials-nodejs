@@ -7,7 +7,6 @@ const fs = require('fs');
 const template = require('../lib/template');
 
 router.get('/create', (req, res) => {
-  console.log('?');
   const title = 'WEB - create';
   const list = template.list(req.list);
   const html = template.HTML(

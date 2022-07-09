@@ -4,6 +4,10 @@ const fs = require('fs');
 const compression = require('compression');
 const topicRouter = require('./routes/topic');
 const indexRouter = require('./routes/index');
+const helmet = require('helmet');
+
+// security
+app.use(helmet());
 
 // static
 app.use(express.static('public'));
