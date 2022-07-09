@@ -5,9 +5,12 @@ const template = require('./lib/template.js');
 const path = require('node:path');
 const sanitizeHtml = require('sanitize-html');
 const qs = require('qs');
+const compression = require('compression');
 
 // body-parser
 app.use(express.urlencoded({ extended: false }));
+// comepression
+app.use(compression());
 
 // route, routing
 app.get('/', (request, response) => {
