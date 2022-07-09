@@ -15,8 +15,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(compression());
 // application-level middleware
 app.get('*', (req, res, next) => {
-  fs.readdir('./data', function (error, filelist) {
-    req.list = filelist;
+  fs.readdir('./data', function (error, list) {
+    req.list = list;
     next();
   });
 });
@@ -37,15 +37,18 @@ app.get('/', (req, res) => {
   res.send(html);
 });
 
-app.get('/page/:pageId', (req, res) => {
+app.get('/page/:pageId', (req, res, next) => {
   const filteredId = path.parse(req.params.pageId).base;
   fs.readFile(`data/${filteredId}`, 'utf8', function (err, description) {
+    if (err) {
+      next(err);
+    }
     const title = req.params.pageId;
     const sanitizedTitle = sanitizeHtml(title);
     const sanitizedDescription = sanitizeHtml(description, {
       allowedTags: ['h1'],
     });
-    const list = template.list(req.filelist);
+    const list = template.list(req.list);
     const html = template.HTML(
       sanitizedTitle,
       list,
@@ -63,7 +66,7 @@ app.get('/page/:pageId', (req, res) => {
 
 app.get('/create', (req, res) => {
   const title = 'WEB - create';
-  const list = template.list(req.filelist);
+  const list = template.list(req.list);
   const html = template.HTML(
     title,
     list,
@@ -114,7 +117,7 @@ app.get('/update/:pageId', (req, res) => {
   const filteredId = path.parse(req.params.pageId).base;
   fs.readFile(`data/${filteredId}`, 'utf8', (err, description) => {
     const title = req.params.pageId;
-    const list = template.list(req.filelist);
+    const list = template.list(req.list);
     const html = template.HTML(
       title,
       list,
@@ -157,8 +160,13 @@ app.post('/delete', (req, res) => {
   });
 });
 
-app.get('/', (err, req, res) => {
+app.use(function (req, res, next) {
   res.status(404).send('Not found');
+});
+
+app.use(function (err, req, res, next) {
+  console.log(err.stack);
+  res.status(500).send('Somthing broke!');
 });
 
 app.listen(3000, () => console.log('## 3000 Listening ##'));
@@ -176,7 +184,7 @@ app.listen(3000, () => console.log('## 3000 Listening ##'));
 //   if (pathname === '/') {
 //     if (queryData.id === undefined) {
 //         //refactoring
-//         var list = template.list(filelist);
+//         var list = template.list(list);
 //         var html = template.HTML(
 //           title,
 //           list,
