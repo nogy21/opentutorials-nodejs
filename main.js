@@ -7,6 +7,8 @@ const sanitizeHtml = require('sanitize-html');
 const qs = require('qs');
 const compression = require('compression');
 
+// static
+app.use(express.static('public'));
 // body-parser
 app.use(express.urlencoded({ extended: false }));
 // comepression
@@ -20,17 +22,19 @@ app.get('*', (req, res, next) => {
 });
 
 // route, routing
-app.get('/', (request, response) => {
+app.get('/', (req, res) => {
   const title = 'Welcome';
   const description = 'Hello, Node.js';
-  const list = template.list(req.filelist);
+  const list = template.list(req.list);
   const html = template.HTML(
     title,
     list,
-    `<h2>${title}</h2>${description}`,
+    `<h2>${title}</h2>${description}
+    <img src="/images/hello.jpg" style="width:500px; display:block; margin:10px;">
+    `,
     `<a href="/create">create</a>`
   );
-  response.send(html);
+  res.send(html);
 });
 
 app.get('/page/:pageId', (req, res) => {
