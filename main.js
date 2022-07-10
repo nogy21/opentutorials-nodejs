@@ -6,7 +6,10 @@ const topicRouter = require("./routes/topic");
 const indexRouter = require("./routes/index");
 const loginRouter = require("./routes/login");
 const helmet = require("helmet");
+const cookieParser = require("cookie-parser");
 
+// cookie-parser
+app.use(cookieParser());
 // security
 app.use(helmet());
 
@@ -16,6 +19,20 @@ app.use(express.static("public"));
 app.use(express.urlencoded({ extended: false }));
 // comepression
 app.use(compression());
+// check cookie
+function authIsOwner(req, res) {
+	let isOwner = false;
+	const cookie = req.cookies ?? {};
+	if (cookie.email === "nogy21@gmail.com" && cookie.password === "1111") {
+		isOwner = true;
+	}
+	return isOwner;
+}
+app.use((req, res, next) => {
+	const isOwner = authIsOwner(req, res);
+	console.log(isOwner);
+	next();
+});
 // application-level middleware
 app.get("*", (req, res, next) => {
 	fs.readdir("./data", function (error, list) {

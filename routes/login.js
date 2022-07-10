@@ -26,8 +26,9 @@ router.post("/", (req, res) => {
 		res.cookie("password", post.password);
 		res.cookie("nickname", "nogy21");
 		res.redirect("/");
+	} else {
+		res.send("Who?");
 	}
-	res.send("Who?");
 });
 
 module.exports = router;
