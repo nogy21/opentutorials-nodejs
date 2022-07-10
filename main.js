@@ -1,18 +1,17 @@
 const express = require("express");
 const app = express();
 const fs = require("fs");
-const compression = require("compression");
 const topicRouter = require("./routes/topic");
 const indexRouter = require("./routes/index");
 const loginRouter = require("./routes/login");
 const helmet = require("helmet");
 const cookieParser = require("cookie-parser");
+const compression = require("compression");
 
 // cookie-parser
 app.use(cookieParser());
 // security
 app.use(helmet());
-
 // static
 app.use(express.static("public"));
 // body-parser
@@ -28,11 +27,18 @@ function authIsOwner(req, res) {
 	}
 	return isOwner;
 }
-app.use((req, res, next) => {
+
+function authStatusUI(req, res) {
 	const isOwner = authIsOwner(req, res);
-	console.log(isOwner);
-	next();
-});
+	let authStatusUI = "<a href='/login'>login</a>";
+	if (isOwner) {
+		authStatusUI = "<a href='/logout'>logout</a>";
+	}
+	return authStatusUI;
+}
+
+app.locals.authStatusUI = authStatusUI;
+
 // application-level middleware
 app.get("*", (req, res, next) => {
 	fs.readdir("./data", function (error, list) {

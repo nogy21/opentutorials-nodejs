@@ -9,6 +9,7 @@ const template = require("../lib/template");
 router.get("/create", (req, res) => {
 	const title = "WEB - create";
 	const list = template.list(req.list);
+	const loginUI = req.app.locals.authStatusUI(req, res);
 	const html = template.HTML(
 		title,
 		list,
@@ -21,7 +22,8 @@ router.get("/create", (req, res) => {
           <input type="submit">
       </p>
     </form>`,
-		""
+		"",
+		loginUI
 	);
 	res.send(html);
 });
@@ -40,22 +42,22 @@ router.get("/update/:pageId", (req, res) => {
 	fs.readFile(`data/${filteredId}`, "utf8", (err, description) => {
 		const title = req.params.pageId;
 		const list = template.list(req.list);
+		const loginUI = req.app.locals.authStatusUI(req, res);
 		const html = template.HTML(
 			title,
 			list,
-			`
-      <form action="/topic/update" method="post">
-        <input type="hidden" name="id" value="${title}">
-        <p><input type="text" name="title" placeholder="title" value="${title}"></p>
-        <p>
-            <textarea name="description" placeholder="description">${description}</textarea>
-        </p>
-        <p>
-            <input type="submit">
-        </p>
-      </form>
-      `,
-			`<a href="/create">create</a> <a href="/topic/update/${title}">update</a>`
+			`<form action="/topic/update" method="post">
+                <input type="hidden" name="id" value="${title}">
+                <p><input type="text" name="title" placeholder="title" value="${title}"></p>
+                <p>
+                    <textarea name="description" placeholder="description">${description}</textarea>
+                </p>
+                <p>
+                    <input type="submit">
+                </p>
+            </form>`,
+			`<a href="/create">create</a> <a href="/topic/update/${title}">update</a>`,
+			loginUI
 		);
 		res.send(html);
 	});
@@ -94,16 +96,18 @@ router.get("/:pageId", (req, res, next) => {
 			allowedTags: ["h1"],
 		});
 		const list = template.list(req.list);
+		const loginUI = req.app.locals.authStatusUI(req, res);
 		const html = template.HTML(
 			sanitizedTitle,
 			list,
 			`<h2>${sanitizedTitle}</h2>${sanitizedDescription}`,
 			`<a href="/topic/create">create</a>
-              <a href="/topic/update/${sanitizedTitle}">update</a>
-              <form action="/topic/delete" method="post">
+            <a href="/topic/update/${sanitizedTitle}">update</a>
+            <form action="/topic/delete" method="post">
                 <input type="hidden" name="id" value="${sanitizedTitle}">
                 <input type="submit" value="delete">
-              </form>`
+            </form>`,
+			loginUI
 		);
 		res.send(html);
 	});
