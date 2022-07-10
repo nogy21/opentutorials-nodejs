@@ -3,15 +3,17 @@ const router = express.Router();
 const template = require("../lib/template");
 
 router.get("/", (req, res) => {
-	const title = "Welcome";
+	const title = "Login";
 	const description = "Hello, Node.js";
 	const list = template.list(req.list);
 	const html = template.HTML(
 		title,
 		list,
-		`<h2>${title}</h2>${description}
-    <img src="/images/hello.jpg" style="width:500px; display:block; margin:10px;">
-    `,
+		`<form action="login" method="post">
+            <p><input type="text" name="email" placeholder="email"></p>
+            <p><input type="text" name="password" placeholder="password"></p>
+            <p><input type="submit"></p>
+        </form>`,
 		`<a href="/topic/create">create</a>`
 	);
 	res.send(html);

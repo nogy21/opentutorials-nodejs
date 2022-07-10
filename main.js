@@ -1,42 +1,44 @@
-const express = require('express');
+const express = require("express");
 const app = express();
-const fs = require('fs');
-const compression = require('compression');
-const topicRouter = require('./routes/topic');
-const indexRouter = require('./routes/index');
-const helmet = require('helmet');
+const fs = require("fs");
+const compression = require("compression");
+const topicRouter = require("./routes/topic");
+const indexRouter = require("./routes/index");
+const loginRouter = require("./routes/login");
+const helmet = require("helmet");
 
 // security
 app.use(helmet());
 
 // static
-app.use(express.static('public'));
+app.use(express.static("public"));
 // body-parser
 app.use(express.urlencoded({ extended: false }));
 // comepression
 app.use(compression());
 // application-level middleware
-app.get('*', (req, res, next) => {
-  fs.readdir('./data', function (error, list) {
-    req.list = list;
-    next();
-  });
+app.get("*", (req, res, next) => {
+	fs.readdir("./data", function (error, list) {
+		req.list = list;
+		next();
+	});
 });
 
 //route
-app.use('/', indexRouter);
-app.use('/topic', topicRouter);
+app.use("/", indexRouter);
+app.use("/topic", topicRouter);
+app.use("/login", loginRouter);
 
 app.use(function (req, res, next) {
-  res.status(404).send('Not found');
+	res.status(404).send("Not found");
 });
 
 app.use(function (err, req, res, next) {
-  console.log(err.stack);
-  res.status(500).send('Somthing broke!');
+	console.log(err.stack);
+	res.status(500).send("Somthing broke!");
 });
 
-app.listen(3000, () => console.log('## 3000 Listening ##'));
+app.listen(3000, () => console.log("## 3000 Listening ##"));
 
 // var http = require('http');
 // var fs = require('fs');
