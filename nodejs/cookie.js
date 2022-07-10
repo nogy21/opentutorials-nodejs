@@ -14,6 +14,8 @@ http.createServer((req, res) => {
 			`PermanentCookie = lemon; Max-Age = ${60 * 60 * 24 * 30}`,
 			"SecureCookie = Secure",
 			"HttpOnly = HttpOnly; HttpOnly",
+			"Path = Path; Path = /cookie",
+			"Domain = Domain; Domain = o2.org",
 		],
 	});
 	res.end("Cookie!!");
