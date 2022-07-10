@@ -19,4 +19,15 @@ router.get("/", (req, res) => {
 	res.send(html);
 });
 
+router.post("/", (req, res) => {
+	const post = req.body;
+	if (post.email === "nogy21@gmail.com" && post.password === "1111") {
+		res.cookie("email", post.email);
+		res.cookie("password", post.password);
+		res.cookie("nickname", "nogy21");
+		res.redirect("/");
+	}
+	res.send("Who?");
+});
+
 module.exports = router;
