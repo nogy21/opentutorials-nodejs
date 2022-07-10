@@ -4,6 +4,7 @@ const fs = require("fs");
 const topicRouter = require("./routes/topic");
 const indexRouter = require("./routes/index");
 const loginRouter = require("./routes/login");
+const logoutRouter = require("./routes/logout");
 const helmet = require("helmet");
 const cookieParser = require("cookie-parser");
 const compression = require("compression");
@@ -51,6 +52,7 @@ app.get("*", (req, res, next) => {
 app.use("/", indexRouter);
 app.use("/topic", topicRouter);
 app.use("/login", loginRouter);
+app.use("/logout", logoutRouter);
 
 app.use(function (req, res, next) {
 	res.status(404).send("Not found");
