@@ -5,28 +5,19 @@ const session = require('express-session');
 const app = express();
 
 app.use(
+  // session store instance: default - MemoryStore instance => memory는 휘발성이기에 서버가 꺼지면 데이터 out
   session({
-    secret: 'keyboard cat',
-    resave: false,
-    saveUninitialized: true,
+    // session middleware로 req 객체 프로퍼티로 session 생성
+    secret: 'keyboard cat', // 공개되어서는 안되는 비밀 키
+    resave: false, // session data가 바뀌기 전 까지는 저장하지 않는다
+    saveUninitialized: true, // session이 필요하기 전 까지는 초기화하지 않는다
   })
 );
 
-app.use((req, res, next) => {
-  if (!req.session.views) {
-    req.session.views = {};
-  }
-  const pathname = parseurl(req).pathname;
-  req.session.views[pathname] = (req.session.views[pathname] || 0) + 1;
-  next();
-});
-
-app.get('/foo', (req, res, next) => {
-  res.send(`you viewed this page ${req.session.views['/foo']} times`);
-});
-
-app.get('/bar', (req, res, next) => {
-  res.send(`you viewed this page ${req.session.views['/bar']} times`);
+app.get('/', (req, res, next) => {
+  console.log(req.session);
+  req.session.num = req.session.num === undefined ? 1 : req.session.num + 1;
+  res.send(`Views: ${req.session.num}`);
 });
 
 app.listen(3000, () => {
