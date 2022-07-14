@@ -45,88 +45,10 @@ router.post('/login', (req, res) => {
   }
 });
 
-/*
-
-router.get('/update/:pageId', (req, res) => {
-  if (checkCookie(req, res)) {
-    const filteredId = path.parse(req.params.pageId).base;
-    fs.readFile(`data/${filteredId}`, 'utf8', (err, description) => {
-      const title = req.params.pageId;
-      const list = template.list(req.list);
-      const loginUI = req.app.locals.authStatusUI(req, res);
-      const html = template.HTML(
-        title,
-        list,
-        `<form action="/topic/update" method="post">
-                <input type="hidden" name="id" value="${title}">
-                <p><input type="text" name="title" placeholder="title" value="${title}"></p>
-                <p>
-                    <textarea name="description" placeholder="description">${description}</textarea>
-                </p>
-                <p>
-                    <input type="submit">
-                </p>
-            </form>`,
-        `<a href="/create">create</a> <a href="/topic/update/${title}">update</a>`,
-        loginUI
-      );
-      res.send(html);
-    });
-  }
-});
-
-router.post('/update', (req, res) => {
-  if (checkCookie(req, res)) {
-    const post = req.body;
-    const id = post.id;
-    const title = post.title;
-    const description = post.description;
-    fs.rename(`data/${id}`, `data/${title}`, function (error) {
-      fs.writeFile(`data/${title}`, description, 'utf8', function (err) {
-        res.redirect(`/topic/${title}`);
-      });
-    });
-  }
-});
-
-router.post('/delete', (req, res) => {
-  checkCookie(req, res);
-  const post = req.body;
-  const id = post.id;
-  const filteredId = path.parse(id).base;
-  fs.unlink(`data/${filteredId}`, function (error) {
+router.get('/logout', (req, res) => {
+  req.session.destroy(function (err) {
     res.redirect('/');
   });
 });
-
-router.get('/:pageId', (req, res, next) => {
-  const filteredId = path.parse(req.params.pageId).base;
-  fs.readFile(`data/${filteredId}`, 'utf8', function (err, description) {
-    if (err) {
-      next(err);
-    }
-    const title = req.params.pageId;
-    const sanitizedTitle = sanitizeHtml(title);
-    const sanitizedDescription = sanitizeHtml(description, {
-      allowedTags: ['h1'],
-    });
-    const list = template.list(req.list);
-    const loginUI = req.app.locals.authStatusUI(req, res);
-    const html = template.HTML(
-      sanitizedTitle,
-      list,
-      `<h2>${sanitizedTitle}</h2>${sanitizedDescription}`,
-      `<a href="/topic/create">create</a>
-            <a href="/topic/update/${sanitizedTitle}">update</a>
-            <form action="/topic/delete" method="post">
-                <input type="hidden" name="id" value="${sanitizedTitle}">
-                <input type="submit" value="delete">
-            </form>`,
-      loginUI
-    );
-    res.send(html);
-  });
-});
-*/
 
 module.exports = router;
