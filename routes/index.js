@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const template = require('../lib/template');
+const auth = require('../lib/auth');
 
 router.get('/', (req, res) => {
   const title = 'Welcome';
   const description = 'Hello, Node.js';
   const list = template.list(req.list);
-  const loginUI = req.app.locals.authStatusUI(req, res);
   const html = template.HTML(
     title,
     list,
@@ -14,7 +14,7 @@ router.get('/', (req, res) => {
         <img src="/images/hello.jpg" style="width:500px; display:block; margin:10px;">
         `,
     `<a href="/topic/create">create</a>`,
-    loginUI
+    auth.statusUI(req, res)
   );
   res.send(html);
 });

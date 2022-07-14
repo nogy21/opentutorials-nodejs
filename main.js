@@ -5,6 +5,8 @@ const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
 const { authStatusUI } = require('./nodejs/cookieFunc');
+const session = require('express-session');
+const FileStore = require('session-file-store')(session);
 
 // cookie-parser
 app.use(cookieParser());
@@ -16,6 +18,15 @@ app.use(express.static('public'));
 app.use(express.urlencoded({ extended: false }));
 // comepression
 app.use(compression());
+// session
+app.use(
+  session({
+    secret: 'asdfzxcv!@#$%ASDF',
+    resave: false,
+    saveUninitialized: true,
+    store: new FileStore(),
+  })
+);
 
 app.locals.authStatusUI = authStatusUI;
 

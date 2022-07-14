@@ -37,10 +37,12 @@ router.post('/login', (req, res) => {
   const email = post.email;
   const password = post.pwd;
   if (email === authData.email && password === authData.password) {
-    res.send('Welcome!');
+    req.session.is_logined = true;
+    req.session.nickname = authData.nickname;
+    res.redirect('/');
+  } else {
+    res.send('Who?');
   }
-  res.send('Who?');
-  // res.redirect(`/topic/${title}`);
 });
 
 /*
