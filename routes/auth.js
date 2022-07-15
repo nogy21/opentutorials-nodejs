@@ -32,19 +32,19 @@ router.get('/login', (req, res) => {
   // }
 });
 
-router.post('/login', (req, res) => {
-  const post = req.body;
-  const email = post.email;
-  const password = post.pwd;
-  if (email === authData.email && password === authData.password) {
-    req.session.is_logined = true;
-    req.session.nickname = authData.nickname;
-    res.session.save(); // session store에 즉각 저장
-    res.redirect('/');
-  } else {
-    res.send('Who?');
-  }
-});
+// router.post('/login', (req, res) => {
+//   const post = req.body;
+//   const email = post.email;
+//   const password = post.pwd;
+//   if (email === authData.email && password === authData.password) {
+//     req.session.is_logined = true;
+//     req.session.nickname = authData.nickname;
+//     res.session.save(); // session store에 즉각 저장
+//     res.redirect('/');
+//   } else {
+//     res.send('Who?');
+//   }
+// });
 
 router.get('/logout', (req, res) => {
   req.session.destroy(function (err) {

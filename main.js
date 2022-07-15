@@ -4,9 +4,10 @@ const fs = require('fs');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
-const { authStatusUI } = require('./nodejs/cookieFunc');
 const session = require('express-session');
 const FileStore = require('session-file-store')(session);
+const passport = require('passport'),
+  LocalStratedy = require('passport-local').Strategy;
 
 // cookie-parser
 app.use(cookieParser());
@@ -27,8 +28,14 @@ app.use(
     store: new FileStore(),
   })
 );
-
-app.locals.authStatusUI = authStatusUI;
+// passport
+passport.post(
+  '/auth/login',
+  passport.authenticate('local', {
+    successRedirect: '/',
+    failureRedirect: '/auth/login',
+  })
+);
 
 // application-level middleware
 app.get('*', (req, res, next) => {
