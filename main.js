@@ -6,8 +6,6 @@ const cookieParser = require('cookie-parser');
 const compression = require('compression');
 const session = require('express-session');
 const FileStore = require('session-file-store')(session);
-const passport = require('passport'),
-  LocalStratedy = require('passport-local').Strategy;
 
 // cookie-parser
 app.use(cookieParser());
@@ -28,8 +26,47 @@ app.use(
     store: new FileStore(),
   })
 );
+
 // passport
-passport.post(
+const authData = {
+  email: 'nogy21@gmail.com',
+  password: '1111', // 비밀번호는 소스코드 바깥 쪽에 위치해야 함. 또한, hash나 암호 알고리즘 적용 필수
+  nickname: 'yong',
+};
+
+const passport = require('passport'),
+  LocalStratedy = require('passport-local').Strategy;
+
+passport.use(
+  new LocalStratedy(
+    {
+      usernameField: 'email',
+      passwordField: 'pwd',
+    },
+    function (username, password, done) {
+      console.log('LocalStrategy', username, password);
+      if (username === authData.email) {
+        console.log(1);
+        if (password === authData.password) {
+          console.log(2);
+          return done(null, authData);
+        } else {
+          console.log(3);
+          return done(null, false, {
+            message: 'Incorrect password.',
+          });
+        }
+      } else {
+        console.log(4);
+        return done(null, false, {
+          message: 'Incorrect username.',
+        });
+      }
+    }
+  )
+);
+
+app.post(
   '/auth/login',
   passport.authenticate('local', {
     successRedirect: '/',
