@@ -4,14 +4,21 @@ const path = require('node:path');
 const sanitizeHtml = require('sanitize-html');
 const fs = require('fs');
 const template = require('../lib/template');
+const { nextTick } = require('node:process');
 
 router.get('/login', (req, res) => {
+  const fmsg = req.flash();
+  let feedback = '';
+  if (fmsg.message) {
+    feedback = fmsg.message[0];
+  }
   const title = 'WEB - login';
   const list = template.list(req.list);
   const html = template.HTML(
     title,
     list,
-    `<form action="/auth/login" method="post">
+    `<div style="color:red;">${feedback}</div>
+      <form action="/auth/login" method="post">
       <p><input type="text" name="email" placeholder="email"></p>
       <p><input type="password" name="pwd" placeholder="password"></p>
       <p>
@@ -37,14 +44,18 @@ router.get('/login', (req, res) => {
 //   }
 // });
 
-router.get('/logout', (req, res) => {
-  req.logout();
+router.get('/logout', (req, res, next) => {
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    }
+    req.session.save(function () {
+      res.redirect('/');
+    });
+  });
   // req.session.destroy(function (err) {
   //   res.redirect('/');
   // });
-  req.session.save(function () {
-    res.redirect('/');
-  });
 });
 
 module.exports = router;

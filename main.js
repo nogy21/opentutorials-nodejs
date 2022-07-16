@@ -29,15 +29,6 @@ app.use(
 );
 // flash
 app.use(flash());
-app.get('/flash', function (req, res) {
-  req.flash('msg', 'Flash is back!'); // sessionStore에 추가
-  res.send('flash');
-});
-app.get('/flash-display', function (req, res) {
-  const fmsg = req.flash(); // sessionStore에서 데이터 추출(삭제)
-  console.log(fmsg);
-  res.send(fmsg);
-});
 
 // passport
 const authData = {
@@ -79,7 +70,9 @@ passport.use(
           console.log(2);
           // 데이터 일치 시 두 번째 인자로 사용자 실제 데이터 전달
           // done 호출 시 serializeUser의 콜백 함수 호출
-          return done(null, authData);
+          return done(null, authData, {
+            message: 'Welcome.',
+          });
         } else {
           console.log(3);
           return done(null, false, {
@@ -96,14 +89,41 @@ passport.use(
   )
 );
 
-app.post(
-  '/auth/login',
-  // local 전략 사용
-  passport.authenticate('local', {
-    successRedirect: '/',
-    failureRedirect: '/auth/login',
-  })
-);
+// app.post(
+//   '/auth/login',
+//   // local 전략 사용
+//   passport.authenticate('local', {
+//     successRedirect: '/',
+//     failureRedirect: '/auth/login',
+//     failureFlash: true,
+//     successFlash: true,
+//   })
+// );
+
+app.post('/auth/login', (req, res, next) => {
+  passport.authenticate('local', (err, user, info) => {
+    if (req.session.flash) {
+      req.session.flash = {};
+    }
+    req.flash('message', info.message);
+    req.session.save(() => {
+      if (err) {
+        return next(err);
+      }
+      if (!user) {
+        return res.redirect('/auth/login');
+      }
+      req.logIn(user, (err) => {
+        if (err) {
+          return next(err);
+        }
+        return req.session.save(() => {
+          res.redirect('/');
+        });
+      });
+    });
+  })(req, res, next);
+});
 
 // application-level middleware
 app.get('*', (req, res, next) => {
