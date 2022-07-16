@@ -50,7 +50,7 @@ passport.serializeUser(function (user, done) {
 // 로그인 여부 판단. 저장된 데이터를 기준으로 필요 정보 조회
 passport.deserializeUser(function (id, done) {
   console.log('deserializeUser', id);
-  done(null, authData); // 사용자 실제 데이터(보통 DB에서 조회)
+  done(null, authData); // 사용자 실제 데이터(보통 DB에서 조회). req.user 주입
 });
 
 passport.use(

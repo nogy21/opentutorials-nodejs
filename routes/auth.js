@@ -38,7 +38,11 @@ router.get('/login', (req, res) => {
 // });
 
 router.get('/logout', (req, res) => {
-  req.session.destroy(function (err) {
+  req.logout();
+  // req.session.destroy(function (err) {
+  //   res.redirect('/');
+  // });
+  req.session.save(function () {
     res.redirect('/');
   });
 });
