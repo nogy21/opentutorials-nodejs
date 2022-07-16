@@ -4,6 +4,7 @@ const template = require('../lib/template');
 const auth = require('../lib/auth');
 
 router.get('/', (req, res) => {
+  console.log('/', req.user);
   const title = 'Welcome';
   const description = 'Hello, Node.js';
   const list = template.list(req.list);

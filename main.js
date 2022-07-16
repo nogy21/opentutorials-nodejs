@@ -37,8 +37,24 @@ const authData = {
 const passport = require('passport'),
   LocalStratedy = require('passport-local').Strategy;
 
+app.use(passport.initialize()); // express에 passport 등록
+app.use(passport.session()); // 내부적으로 session 사용
+
+// 세션 처리 방법
+// local 정책에서 사용자 정보 전달받음. 로그인 성공 시 sessionStore에 저장
+passport.serializeUser(function (user, done) {
+  console.log('serializeUser', user);
+  // 사용자 식별값을 추출해 done 호출 시 세션 데이터의 passport.user에 저장
+  done(null, user.email);
+});
+// 로그인 여부 판단. 저장된 데이터를 기준으로 필요 정보 조회
+passport.deserializeUser(function (id, done) {
+  console.log('deserializeUser', id);
+  done(null, authData); // 사용자 실제 데이터(보통 DB에서 조회)
+});
+
 passport.use(
-  new LocalStratedy(
+  new LocalStratedy( // local 전략
     {
       usernameField: 'email',
       passwordField: 'pwd',
@@ -49,6 +65,8 @@ passport.use(
         console.log(1);
         if (password === authData.password) {
           console.log(2);
+          // 데이터 일치 시 두 번째 인자로 사용자 실제 데이터 전달
+          // done 호출 시 serializeUser의 콜백 함수 호출
           return done(null, authData);
         } else {
           console.log(3);
@@ -68,6 +86,7 @@ passport.use(
 
 app.post(
   '/auth/login',
+  // local 전략 사용
   passport.authenticate('local', {
     successRedirect: '/',
     failureRedirect: '/auth/login',
@@ -88,6 +107,7 @@ const indexRouter = require('./routes/index');
 const loginRouter = require('./routes/login');
 const logoutRouter = require('./routes/logout');
 const authRouter = require('./routes/auth');
+const { application } = require('express');
 
 // route
 app.use('/', indexRouter);
