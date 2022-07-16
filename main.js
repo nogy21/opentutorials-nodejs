@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const compression = require('compression');
 const session = require('express-session');
 const FileStore = require('session-file-store')(session);
+const flash = require('connect-flash');
 
 // cookie-parser
 app.use(cookieParser());
@@ -26,6 +27,17 @@ app.use(
     store: new FileStore(),
   })
 );
+// flash
+app.use(flash());
+app.get('/flash', function (req, res) {
+  req.flash('msg', 'Flash is back!'); // sessionStore에 추가
+  res.send('flash');
+});
+app.get('/flash-display', function (req, res) {
+  const fmsg = req.flash(); // sessionStore에서 데이터 추출(삭제)
+  console.log(fmsg);
+  res.send(fmsg);
+});
 
 // passport
 const authData = {
