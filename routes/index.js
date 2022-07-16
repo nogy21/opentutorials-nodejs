@@ -6,7 +6,6 @@ const auth = require('../lib/auth');
 router.get('/', (req, res) => {
   const fmsg = req.flash();
   let feedback = '';
-  console.log(fmsg);
   if (fmsg.message) {
     feedback = fmsg.message;
   }
