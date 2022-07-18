@@ -3,12 +3,7 @@ const router = express.Router();
 const fs = require('fs');
 const template = require('../lib/template');
 const shortid = require('shortid');
-// lowdb
-const low = require('lowdb');
-const FileSync = require('lowdb/adapters/FileSync');
-const adapter = new FileSync('db.json');
-const db = low(adapter);
-db.defaults({ users: [] }).write();
+const db = require('../lib/db');
 
 module.exports = function (passport) {
   router.get('/login', (req, res) => {
@@ -101,15 +96,17 @@ module.exports = function (passport) {
       res.redirect('/auth/register');
     } else {
       // 아직 암호화 처리 X
-      db.get('users')
-        .push({
-          id: shortid.generate(),
-          email: email,
-          password: pwd,
-          displayName: displayName,
-        })
-        .write();
-      res.redirect('/');
+      const user = {
+        id: shortid.generate(),
+        email: email,
+        password: pwd,
+        displayName: displayName,
+      };
+      db.get('users').push(user).write();
+      req.login(user, function (err) {
+        console.log('redirect');
+        return res.redirect('/');
+      });
     }
   });
 
