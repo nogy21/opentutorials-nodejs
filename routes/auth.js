@@ -4,6 +4,7 @@ const fs = require('fs');
 const template = require('../lib/template');
 const shortid = require('shortid');
 const db = require('../lib/db');
+const bcrypt = require('bcrypt');
 
 module.exports = function auth(passport) {
   router.get('/login', (req, res) => {
@@ -95,17 +96,18 @@ module.exports = function auth(passport) {
       req.flash('error', 'Password must same!');
       res.redirect('/auth/register');
     } else {
-      // 아직 암호화 처리 X
-      const user = {
-        id: shortid.generate(),
-        email: email,
-        password: pwd,
-        displayName: displayName,
-      };
-      db.get('users').push(user).write();
-      req.login(user, function (err) {
-        console.log('redirect');
-        return res.redirect('/');
+      bcrypt.hash(pwd, 10, function (err, hash) {
+        const user = {
+          id: shortid.generate(),
+          email: email,
+          password: hash,
+          displayName: displayName,
+        };
+        db.get('users').push(user).write();
+        req.login(user, function (err) {
+          console.log('redirect');
+          return res.redirect('/');
+        });
       });
     }
   });
