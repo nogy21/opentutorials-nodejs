@@ -27,13 +27,22 @@
     "express": "^4.18.1",
     "express-session": "^1.17.3",
     "helmet": "^5.1.0",
+    "lowdb": "^1.0.0",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
     "pm2": "^5.2.0",
     "sanitize-html": "^2.7.0",
-    "session-file-store": "^1.5.0"
+    "session-file-store": "^1.5.0",
+    "shortid": "^2.2.16"
   },
   "devDependencies": {
     "nodemon": "^2.0.19"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "data/*",
+      "sessions/*",
+      "db.json"
+    ]
   }
 }
