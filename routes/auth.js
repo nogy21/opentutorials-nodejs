@@ -18,14 +18,16 @@ module.exports = function (passport) {
     const html = template.HTML(
       title,
       list,
-      `<div style="color:red;">${feedback}</div>
+      `
+      <div style="color:red;">${feedback}</div>
       <form action="/auth/login" method="post">
-      <p><input type="text" name="email" placeholder="email"></p>
-      <p><input type="password" name="pwd" placeholder="password"></p>
-      <p>
+        <p><input type="text" name="email" placeholder="email"></p>
+        <p><input type="password" name="pwd" placeholder="password"></p>
+        <p>
           <input type="submit" value="login">
-      </p>
-    </form>`,
+        </p>
+      </form>
+      `,
       ''
     );
     res.send(html);
@@ -54,6 +56,34 @@ module.exports = function (passport) {
         });
       });
     })(req, res, next);
+  });
+
+  router.get('/register', (req, res) => {
+    const fmsg = req.flash();
+    let feedback = '';
+    if (fmsg.message) {
+      feedback = fmsg.message[0];
+    }
+    const title = 'WEB - login';
+    const list = template.list(req.list);
+    const html = template.HTML(
+      title,
+      list,
+      `
+      <div style="color:red;">${feedback}</div>
+      <form action="/auth/register" method="post">
+        <p><input type="text" name="email" placeholder="email"></p>
+        <p><input type="password" name="pwd" placeholder="password"></p>
+        <p><input type="password" name="pwd2" placeholder="password"></p>
+        <p><input type="text" name="displayName" placeholder="display name"></p>
+        <p>
+          <input type="submit" value="register">
+        </p>
+      </form>
+      `,
+      ''
+    );
+    res.send(html);
   });
 
   router.get('/logout', (req, res, next) => {
