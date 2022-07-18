@@ -6,6 +6,8 @@ const qs = require('qs');
 const fs = require('fs');
 const template = require('../lib/template');
 const auth = require('../lib/auth');
+const db = require('../lib/db');
+const shortid = require('shortid');
 
 router.get('/create', (req, res) => {
   if (!auth.isOwner(req, res)) {
@@ -40,9 +42,16 @@ router.post('/create', (req, res) => {
   const post = req.body;
   const title = post.title;
   const description = post.description;
-  fs.writeFile(`data/${title}`, description, 'utf8', function (err) {
-    res.redirect(`/topic/${title}`);
-  });
+  const id = shortid.generate();
+  db.get('topics')
+    .push({
+      id: id,
+      title: title,
+      description: description,
+      user_id: req.user.id,
+    })
+    .write();
+  res.redirect(`/topic/${id}`);
 });
 
 router.get('/update/:pageId', (req, res) => {
@@ -104,31 +113,30 @@ router.post('/delete', (req, res) => {
 });
 
 router.get('/:pageId', (req, res, next) => {
-  const filteredId = path.parse(req.params.pageId).base;
-  fs.readFile(`data/${filteredId}`, 'utf8', function (err, description) {
-    if (err) {
-      next(err);
-    }
-    const title = req.params.pageId;
-    const sanitizedTitle = sanitizeHtml(title);
-    const sanitizedDescription = sanitizeHtml(description, {
-      allowedTags: ['h1'],
-    });
-    const list = template.list(req.list);
-    const html = template.HTML(
-      sanitizedTitle,
-      list,
-      `<h2>${sanitizedTitle}</h2>${sanitizedDescription}`,
-      `<a href="/topic/create">create</a>
+  const topic = db.get('topics').find({ id: req.params.pageId }).value();
+  const user = db.get('users').find({ id: topic.user_id }).value();
+  const sanitizedTitle = sanitizeHtml(topic.title);
+  const sanitizedDescription = sanitizeHtml(topic.description, {
+    allowedTags: ['h1'],
+  });
+  const list = template.list(req.list);
+  const html = template.HTML(
+    sanitizedTitle,
+    list,
+    `
+    <h2>${sanitizedTitle}</h2>
+    ${sanitizedDescription}
+    <p>by ${user.displayName}</p>
+    `,
+    `<a href="/topic/create">create</a>
       <a href="/topic/update/${sanitizedTitle}">update</a>
       <form action="/topic/delete" method="post">
           <input type="hidden" name="id" value="${sanitizedTitle}">
           <input type="submit" value="delete">
       </form>`,
-      auth.statusUI(req, res)
-    );
-    res.send(html);
-  });
+    auth.statusUI(req, res)
+  );
+  res.send(html);
 });
 
 module.exports = router;

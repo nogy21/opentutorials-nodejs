@@ -7,6 +7,7 @@ const compression = require('compression');
 const session = require('express-session');
 const FileStore = require('session-file-store')(session);
 const flash = require('connect-flash');
+const db = require('./lib/db');
 
 // cookie-parser
 app.use(cookieParser());
@@ -35,10 +36,8 @@ const passport = require('./lib/passport')(app);
 
 // application-level middleware
 app.get('*', (req, res, next) => {
-  fs.readdir('./data', function (error, list) {
-    req.list = list;
-    next();
-  });
+  req.list = db.get('topics').take(100).value();
+  next();
 });
 
 // Router
