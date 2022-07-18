@@ -30,6 +30,8 @@
     "helmet": "^5.1.0",
     "lowdb": "^1.0.0",
     "passport": "^0.6.0",
+    "passport-google-oauth": "^2.0.0",
+    "passport-google-oauth20": "^2.0.0",
     "passport-local": "^1.0.0",
     "pm2": "^5.2.0",
     "sanitize-html": "^2.7.0",
