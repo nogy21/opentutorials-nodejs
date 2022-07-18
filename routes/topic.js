@@ -59,28 +59,31 @@ router.get('/update/:pageId', (req, res) => {
     res.redirect('/');
     return false;
   }
-  const filteredId = path.parse(req.params.pageId).base;
-  fs.readFile(`data/${filteredId}`, 'utf8', (err, description) => {
-    const title = req.params.pageId;
-    const list = template.list(req.list);
-    const html = template.HTML(
-      title,
-      list,
-      `<form action="/topic/update" method="post">
-        <input type="hidden" name="id" value="${title}">
-        <p><input type="text" name="title" placeholder="title" value="${title}"></p>
-        <p>
-            <textarea name="description" placeholder="description">${description}</textarea>
-        </p>
-        <p>
-            <input type="submit">
-        </p>
-      </form>`,
-      `<a href="/create">create</a> <a href="/topic/update/${title}">update</a>`,
-      auth.statusUI(req, res)
-    );
-    res.send(html);
-  });
+  const topic = db.get('topics').find({ id: req.params.pageId }).value();
+  if (topic.user_id !== req.user.id) {
+    req.flash('error', 'Not yours!');
+    return res.redirect('/');
+  }
+  const title = topic.title;
+  const description = topic.description;
+  const list = template.list(req.list);
+  const html = template.HTML(
+    title,
+    list,
+    `<form action="/topic/update" method="post">
+      <input type="hidden" name="id" value="${topic.id}">
+      <p><input type="text" name="title" placeholder="title" value="${title}"></p>
+      <p>
+          <textarea name="description" placeholder="description">${description}</textarea>
+      </p>
+      <p>
+          <input type="submit">
+      </p>
+    </form>`,
+    `<a href="/create">create</a> <a href="/topic/update/${topic.id}">update</a>`,
+    auth.statusUI(req, res)
+  );
+  res.send(html);
 });
 
 router.post('/update', (req, res) => {
@@ -88,15 +91,23 @@ router.post('/update', (req, res) => {
     res.redirect('/');
     return false;
   }
+  const topic = db.get('topics').find({ id: id }).value();
   const post = req.body;
   const id = post.id;
   const title = post.title;
   const description = post.description;
-  fs.rename(`data/${id}`, `data/${title}`, function (error) {
-    fs.writeFile(`data/${title}`, description, 'utf8', function (err) {
-      res.redirect(`/topic/${title}`);
-    });
-  });
+  if (topic.user_id !== req.user_id) {
+    req.flash('error', 'Not yours!');
+    return res.redirect('/');
+  }
+  db.get('topics')
+    .find({ id: id })
+    .assign({
+      title: title,
+      description: description,
+    })
+    .write();
+  res.redirect(`/topic/${topic.id}`);
 });
 
 router.post('/delete', (req, res) => {
@@ -106,10 +117,13 @@ router.post('/delete', (req, res) => {
   }
   const post = req.body;
   const id = post.id;
-  const filteredId = path.parse(id).base;
-  fs.unlink(`data/${filteredId}`, function (error) {
-    res.redirect('/');
-  });
+  const topic = db.get('topics').find({ id: id }).value();
+  if (topic.user_id !== req.user.id) {
+    req.flash('error', 'Not yours!');
+    return res.redirect('/');
+  }
+  db.get('topics').remove({ id: id }).write();
+  res.redirect('/');
 });
 
 router.get('/:pageId', (req, res, next) => {
@@ -129,9 +143,9 @@ router.get('/:pageId', (req, res, next) => {
     <p>by ${user.displayName}</p>
     `,
     `<a href="/topic/create">create</a>
-      <a href="/topic/update/${sanitizedTitle}">update</a>
+      <a href="/topic/update/${topic.id}">update</a>
       <form action="/topic/delete" method="post">
-          <input type="hidden" name="id" value="${sanitizedTitle}">
+          <input type="hidden" name="id" value="${topic.id}">
           <input type="submit" value="delete">
       </form>`,
     auth.statusUI(req, res)

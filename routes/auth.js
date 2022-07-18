@@ -5,7 +5,7 @@ const template = require('../lib/template');
 const shortid = require('shortid');
 const db = require('../lib/db');
 
-module.exports = function (passport) {
+module.exports = function auth(passport) {
   router.get('/login', (req, res) => {
     const fmsg = req.flash();
     let feedback = '';
