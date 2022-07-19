@@ -168,10 +168,10 @@ dist
 *.code-workspace
 
 # session
-.session/*
-./db.json
+sessions/
+/db.json
 
 # config
-./config/google.json
+config/google.json
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,node
