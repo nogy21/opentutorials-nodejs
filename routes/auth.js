@@ -97,13 +97,21 @@ module.exports = function auth(passport) {
       res.redirect('/auth/register');
     } else {
       bcrypt.hash(pwd, 10, function (err, hash) {
-        const user = {
-          id: shortid.generate(),
-          email: email,
-          password: hash,
-          displayName: displayName,
-        };
-        db.get('users').push(user).write();
+        let user = db.get('users').find({ email: email }).value();
+        if (user) {
+          user.password = hash;
+          user.displayName = displayName;
+          db.get('users').find({ id: user.id }).assign(user).write();
+        } else {
+          user = {
+            id: shortid.generate(),
+            email: email,
+            password: hash,
+            displayName: displayName,
+          };
+          db.get('users').push(user).write();
+        }
+
         req.login(user, function (err) {
           console.log('redirect');
           return res.redirect('/');
